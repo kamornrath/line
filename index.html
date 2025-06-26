@@ -1,0 +1,2330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Performance Update</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            .block-table {
+                padding: 20px;
+                margin: 30px 0;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 6px;
+            }
+
+            .roadmap-container {
+                padding: 20px;
+                margin: 30px 0;
+            }
+
+            .action-timeline::before {
+                left: 20px;
+            }
+
+            .action-card {
+                margin-left: 50px;
+                padding: 20px;
+            }
+
+            .action-timeline-item {
+                left: -50px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .metric-target {
+                padding: 20px;
+            }
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 50%, #45B7D1 100%);
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1);
+            border-radius: 20px 20px 0 0;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide:nth-child(1) { animation-delay: 0.1s; }
+        .slide:nth-child(2) { animation-delay: 0.3s; }
+        .slide:nth-child(3) { animation-delay: 0.5s; }
+        .slide:nth-child(4) { animation-delay: 0.7s; }
+        .slide:nth-child(5) { animation-delay: 0.9s; }
+
+        .slide-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            position: relative;
+            clear: both;
+        }
+
+        .slide-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .bullet-points {
+            list-style: none;
+            padding: 0;
+            margin-top: 40px;
+            clear: both;
+        }
+
+        .bullet-points li {
+            margin: 20px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1rem;
+            color: #444;
+        }
+
+        .bullet-points li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #FF6B6B;
+            font-weight: bold;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #fff5f5 0%, #e8f8f8 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 107, 0.1);
+        }
+
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-below { background: #ffe8e8; color: #d32f2f; }
+
+        .chart-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            min-height: 650px;
+            border: 1px solid rgba(255, 107, 107, 0.1);
+            clear: both;
+            z-index: 5;
+        }
+
+        .chart-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke-width: 3;
+            transition: all 0.3s ease;
+        }
+
+        .line-auto { stroke: #4ECDC4; stroke-width: 4; }
+        .line-travel { stroke: #FF6B6B; stroke-width: 4; }
+        .line-auto-st { stroke: #45B7D1; stroke-width: 4; }
+        .line-target { stroke: #FFA726; stroke-dasharray: 8,4; stroke-width: 3; }
+
+        .chart-point {
+            fill: #fff;
+            stroke-width: 3;
+            r: 6;
+            transition: all 0.2s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .chart-point:hover {
+            r: 9;
+            stroke-width: 4;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .point-auto { stroke: #4ECDC4; }
+        .point-travel { stroke: #FF6B6B; }
+        .point-auto-st { stroke: #45B7D1; }
+
+        .chart-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 107, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            color: #444;
+            font-weight: 500;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 4px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .legend-auto { background: #4ECDC4; }
+        .legend-travel { background: #FF6B6B; }
+        .legend-auto-st { background: #45B7D1; }
+        .line-block { stroke: #FF6B6B; stroke-width: 4; }
+
+        .point-block { stroke: #FF6B6B; }
+
+        .legend-block { background: #FF6B6B; }
+
+        /* Block Rate Table Styles */
+        .block-table {
+            margin: 40px 0;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #2d3748;
+            font-weight: 700;
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        .data-table tr:hover {
+            background: rgba(78, 205, 196, 0.05);
+        }
+
+        .highlight-row {
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .highlight-row:hover {
+            background: rgba(255, 107, 107, 0.15);
+        }
+
+        .status-low {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-medium {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Next Actions & Roadmap Styles */
+        .roadmap-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+        }
+
+        .roadmap-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .roadmap-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .action-timeline {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .action-timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #4ECDC4, #45B7D1);
+            border-radius: 2px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-left: 70px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4ECDC4;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-card.priority-high {
+            border-left-color: #FF6B6B;
+        }
+
+        .action-card.priority-medium {
+            border-left-color: #FFA726;
+        }
+
+        .action-card.priority-low {
+            border-left-color: #4ECDC4;
+        }
+
+        .action-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4ECDC4 0%, #45B7D1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .action-meta {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .priority-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-badge.high {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .priority-badge.medium {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .priority-badge.low {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .action-content {
+            margin-bottom: 20px;
+        }
+
+        .action-description {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .action-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .detail-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .action-timeline-item {
+            position: absolute;
+            left: -70px;
+            top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #4ECDC4;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-label {
+            background: #4ECDC4;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Success Metrics */
+        .success-metrics {
+            margin: 50px 0;
+        }
+
+        .metrics-title {
+            font-size: 1.4rem;
+            color: #2d3748;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-target {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 2px solid #f7fafc;
+            transition: all 0.3s ease;
+        }
+
+        .metric-target:hover {
+            border-color: #4ECDC4;
+            transform: translateY(-2px);
+        }
+
+        .target-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .target-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        /* Customer Breakdown Styles */
+        .customer-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .breakdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .breakdown-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .breakdown-item.total {
+            border: 2px solid #4ECDC4;
+        }
+
+        .breakdown-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .breakdown-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .breakdown-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .breakdown-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* April Calendar Styles */
+        .april-row {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .april-row:hover {
+            background: rgba(255, 107, 107, 0.2) !important;
+        }
+
+        .may-row,
+        .june-row {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .may-row:hover {
+            background: rgba(34, 197, 94, 0.15) !important;
+        }
+
+        .june-row:hover {
+            background: rgba(59, 130, 246, 0.15) !important;
+        }
+
+        .month-calendar-container {
+            margin-top: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid;
+            animation: slideDown 0.5s ease;
+        }
+
+        .may-calendar {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border-color: #dc2626;
+        }
+
+        .june-calendar {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .may-calendar .calendar-header h4 {
+            color: #16a34a;
+        }
+
+        .may-calendar .calendar-header p {
+            color: #15803d;
+        }
+
+        .june-calendar .calendar-header h4 {
+            color: #2563eb;
+        }
+
+        .june-calendar .calendar-header p {
+            color: #1d4ed8;
+        }
+
+        .campaign-indicator.partnership {
+            color: #0891b2;
+        }
+
+        .campaign-day.partnership {
+            background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+            border: 2px solid #0891b2;
+        }
+
+        .campaign-day.partnership:hover {
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
+        }
+
+        .april-calendar-container {
+            margin-top: 20px;
+            padding: 25px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+            border-radius: 15px;
+            border: 2px solid #fca5a5;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header h4 {
+            color: #dc2626;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .calendar-header p {
+            color: #7f1d1d;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .calendar-header-row {
+            display: contents;
+        }
+
+        .calendar-day-header {
+            padding: 10px;
+            text-align: center;
+            font-weight: 700;
+            color: #7f1d1d;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #6b7280;
+            position: relative;
+            min-height: 60px;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+        }
+
+        .calendar-day.campaign-day {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day.campaign-day:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .campaign-indicator {
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .campaign-indicator.motor {
+            color: #dc2626;
+        }
+
+        .campaign-indicator.cross-sell {
+            color: #7c3aed;
+        }
+
+        .campaign-day.cross-sell {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border: 2px solid #7c3aed;
+        }
+
+        .campaign-day.cross-sell:hover {
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        /* Modal Styles */
+        .campaign-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h5 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.2rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            min-height: 200px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .modal-image[src=""] {
+            content: "Image not available";
+        }
+
+        .modal-image[src=""]:before {
+            content: "📷 Image not available";
+            font-size: 18px;
+        }
+
+        .modal-description {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .chart-axis {
+            stroke: #e0e0e0;
+            stroke-width: 1;
+        }
+
+        .chart-grid {
+            stroke: #f5f5f5;
+            stroke-width: 1;
+        }
+
+        .chart-label {
+            font-size: 12px;
+            fill: #666;
+            text-anchor: middle;
+        }
+
+        .chart-y-label {
+            text-anchor: end;
+        }
+
+        .cover-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 50%, #45B7D1 100%);
+            color: white;
+        }
+
+        .cover-slide::before {
+            background: linear-gradient(90deg, #ffffff44, #ffffff77);
+        }
+
+        .cover-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .cover-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .date-info {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 30px;
+        }
+
+        /* Analysis section with better spacing */
+        .analysis-section {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            clear: both;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Issues section styles */
+        .issue-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+            clear: both;
+        }
+
+        .issue-section {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid #e2e8f0;
+            position: relative;
+            overflow: visible;
+        }
+
+        .issue-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .screenshot-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .screenshot-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            min-height: 200px;
+            object-fit: cover;
+        }
+
+        .screenshot-image:hover {
+            transform: scale(1.02);
+        }
+
+        .solution-image {
+            border: 3px solid #4ECDC4;
+        }
+
+        .image-fallback {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px dashed #cbd5e0;
+            min-height: 400px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fallback-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .fallback-content h4 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            text-align: center;
+            position: relative;
+            z-index: 3;
+        }
+        .line-interface {
+            background: #f0f2f5;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .line-header {
+            background: #ffffff;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .line-time {
+            color: #000;
+        }
+
+        .line-title {
+            color: #333;
+            flex: 1;
+            text-align: center;
+        }
+
+        .line-icons {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .chat-area {
+            padding: 16px;
+            min-height: 200px;
+        }
+
+        .system-messages {
+            margin-bottom: 20px;
+        }
+
+        .system-msg {
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin: 6px 0;
+            font-size: 11px;
+            color: #666;
+            border-left: 3px solid #4ECDC4;
+        }
+
+        .bot-message-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .bot-message {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            max-width: 280px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .bot-message::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 16px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 8px 8px 8px 0;
+            border-color: transparent white transparent transparent;
+        }
+
+        .bot-message.solution {
+            border-left: 4px solid #4ECDC4;
+        }
+
+        .greeting-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .main-text {
+            color: #444;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .user-display-name {
+            background: #4ECDC4;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .highlight-yellow {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .website-link {
+            color: #4ECDC4;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .rich-menu-section {
+            background: #ffffff;
+            padding: 0;
+        }
+
+        .menu-row {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .menu-row:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item {
+            flex: 1;
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 10px;
+            line-height: 1.3;
+            border-right: 1px solid #e0e0e0;
+            color: #333;
+            font-weight: 500;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .menu-item:last-child {
+            border-right: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .menu-item.fire {
+            background: linear-gradient(135deg, #FFE5B4 0%, #FFCC80 100%);
+        }
+
+        .menu-item.sunny {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+        }
+
+        .menu-item.contact {
+            background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%);
+        }
+
+        .menu-item.travel {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+        }
+
+        .menu-item.home {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+        }
+
+        .menu-item.card {
+            background: linear-gradient(135deg, #F1F8E9 0%, #DCEDC8 100%);
+        }
+
+        .price-red {
+            color: #d32f2f;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .price-blue {
+            color: #1976d2;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .price-big {
+            color: #d32f2f;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .discount {
+            color: #d32f2f;
+            font-weight: 700;
+        }
+
+        .issue-note {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #dc2626;
+        }
+
+        .solution-note {
+            background: #f0fdf4;
+            color: #16a34a;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #16a34a;
+        }
+
+        .view-image-link {
+            display: inline-block;
+            background: #4ECDC4;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .view-image-link:hover {
+            background: #45a29e;
+        }
+
+        @media (max-width: 768px) {
+            .presentation-container {
+                padding: 10px;
+            }
+            
+            .slide {
+                padding: 30px 20px;
+                margin: 20px 0;
+            }
+            
+            .slide-title {
+                font-size: 2rem;
+            }
+            
+            .cover-title {
+                font-size: 2.5rem;
+            }
+            
+            .chart-container {
+                padding: 25px;
+                min-height: 600px;
+            }
+            
+            .chart-wrapper {
+                height: 300px;
+                margin-bottom: 30px;
+            }
+            
+            .chart-legend {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .bullet-points {
+                margin-top: 30px;
+            }
+
+            .issue-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                margin: 30px 0;
+            }
+
+            .screenshot-image {
+                max-width: 90%;
+            }
+
+            .slide {
+                padding: 20px 15px;
+                margin: 20px 0;
+            }
+
+            .issue-section {
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+
+            .line-interface {
+                margin: 15px 0;
+            }
+
+            .analysis-section {
+                margin-top: 30px;
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        
+        <!-- Slide 1: Executive Summary with Key Metrics -->
+        <div class="slide cover-slide">
+            <h1 class="cover-title">LINE Performance Crisis</h1>
+            <p class="cover-subtitle">Critical underperformance across all product lines</p>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-value">53%</div>
+                    <div class="metric-label">Current Avg Rate <span class="status-indicator status-below">-27% vs Target</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">80%</div>
+                    <div class="metric-label">Target KPI</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">10,800+</div>
+                    <div class="metric-label">Failed Connections</div>
+                </div>
+            </div>
+            <p class="date-info">Jan - Jun 2025 | Immediate Action Required</p>
+        </div>
+
+        <!-- Slide 2: Performance Trend Analysis -->
+        <div class="slide">
+            <h2 class="slide-title">Performance Trend Analysis</h2>
+            <p class="slide-subtitle">Travel product shows severe deterioration, AUTO declining from May</p>
+            
+            <div class="chart-container">
+                <div class="chart-title">Connection Rate Trend by Product Type (%)</div>
+                <div class="chart-wrapper">
+                    <svg class="chart-svg" viewBox="0 0 900 320">
+                        <!-- Grid lines -->
+                        <g class="grid">
+                            <line class="chart-grid" x1="80" y1="40" x2="80" y2="280"></line>
+                            <line class="chart-grid" x1="80" y1="280" x2="860" y2="280"></line>
+                            <!-- Horizontal grid lines -->
+                            <line class="chart-grid" x1="80" y1="232" x2="860" y2="232"></line>
+                            <line class="chart-grid" x1="80" y1="184" x2="860" y2="184"></line>
+                            <line class="chart-grid" x1="80" y1="136" x2="860" y2="136"></line>
+                            <line class="chart-grid" x1="80" y1="88" x2="860" y2="88"></line>
+                            <line class="chart-grid" x1="80" y1="40" x2="860" y2="40"></line>
+                        </g>
+                        
+                        <!-- Y-axis labels -->
+                        <text class="chart-label chart-y-label" x="75" y="285">0%</text>
+                        <text class="chart-label chart-y-label" x="75" y="237">20%</text>
+                        <text class="chart-label chart-y-label" x="75" y="189">40%</text>
+                        <text class="chart-label chart-y-label" x="75" y="141">60%</text>
+                        <text class="chart-label chart-y-label" x="75" y="93">80%</text>
+                        <text class="chart-label chart-y-label" x="75" y="45">100%</text>
+                        
+                        <!-- X-axis labels -->
+                        <text class="chart-label" x="145" y="300">Jan</text>
+                        <text class="chart-label" x="210" y="300">Feb</text>
+                        <text class="chart-label" x="275" y="300">Mar</text>
+                        <text class="chart-label" x="340" y="300">Apr</text>
+                        <text class="chart-label" x="405" y="300">May</text>
+                        <text class="chart-label" x="470" y="300">Jun</text>
+                        
+                        <!-- Target line (80%) -->
+                        <line class="chart-line line-target" x1="80" y1="88" x2="860" y2="88"></line>
+                        
+                        <!-- AUTO line -->
+                        <polyline class="chart-line line-auto" points="145,86 210,122 275,115 340,139 405,134 470,152"></polyline>
+                        
+                        <!-- Travel line -->
+                        <polyline class="chart-line line-travel" points="145,204 210,199 275,202 340,197 405,224 470,223"></polyline>
+                        
+                        <!-- Auto Short Term line (Apr-Jun only) -->
+                        <polyline class="chart-line line-auto-st" points="340,175 405,148 470,199"></polyline>
+                        
+                        <!-- Data points AUTO -->
+                        <circle class="chart-point point-auto" cx="145" cy="86" data-value="80.7%"></circle>
+                        <circle class="chart-point point-auto" cx="210" cy="122" data-value="65.0%"></circle>
+                        <circle class="chart-point point-auto" cx="275" cy="115" data-value="68.2%"></circle>
+                        <circle class="chart-point point-auto" cx="340" cy="139" data-value="58.4%"></circle>
+                        <circle class="chart-point point-auto" cx="405" cy="134" data-value="61.5%"></circle>
+                        <circle class="chart-point point-auto" cx="470" cy="152" data-value="52.9%"></circle>
+                        
+                        <!-- Data points Travel -->
+                        <circle class="chart-point point-travel" cx="145" cy="204" data-value="31.6%"></circle>
+                        <circle class="chart-point point-travel" cx="210" cy="199" data-value="32.9%"></circle>
+                        <circle class="chart-point point-travel" cx="275" cy="202" data-value="32.4%"></circle>
+                        <circle class="chart-point point-travel" cx="340" cy="197" data-value="33.1%"></circle>
+                        <circle class="chart-point point-travel" cx="405" cy="224" data-value="28.0%"></circle>
+                        <circle class="chart-point point-travel" cx="470" cy="223" data-value="28.6%"></circle>
+                        
+                        <!-- Data points Auto Short Term -->
+                        <circle class="chart-point point-auto-st" cx="340" cy="175" data-value="43.4%"></circle>
+                        <circle class="chart-point point-auto-st" cx="405" cy="148" data-value="45.1%"></circle>
+                        <circle class="chart-point point-auto-st" cx="470" cy="199" data-value="32.4%"></circle>
+                    </svg>
+                </div>
+                
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-auto"></div>
+                        <span>AUTO (Started 81%, declining to 53%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-travel"></div>
+                        <span>Travel (Stuck at ~30%, critical issue)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-auto-st"></div>
+                        <span>Auto Short Term (Volatile, June crash)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-target"></div>
+                        <span>Target 80% (All products failing)</span>
+                    </div>
+                </div>
+                
+                <!-- May Campaign Calendar (Initially Hidden) -->
+                <div id="may-calendar" class="month-calendar-container may-calendar" style="display: none;">
+                    <div class="calendar-header">
+                        <h4>📅 May 2025 Campaign Timeline</h4>
+                        <p>ALARM: 7 campaigns sent (Exceeding safe limits)</p>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="calendar-header-row">
+                            <div class="calendar-day-header">Mo</div>
+                            <div class="calendar-day-header">Tu</div>
+                            <div class="calendar-day-header">We</div>
+                            <div class="calendar-day-header">Th</div>
+                            <div class="calendar-day-header">Fr</div>
+                            <div class="calendar-day-header">Sa</div>
+                            <div class="calendar-day-header">Su</div>
+                        </div>
+                        
+                        <!-- May 2025 Calendar -->
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day campaign-day" data-date="8" onclick="
+                            document.getElementById('modal-title').textContent = '8 May - Travel Long Holiday (Existing Motor)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B8%20May%202025%5D%20Existing%20Motor%E2%80%8B%20-%20Travel%20Long%20Holiday.jpg';
+                            document.getElementById('modal-description').textContent = 'Travel long holiday promotion for existing motor customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">8</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day campaign-day" data-date="9" onclick="
+                            document.getElementById('modal-title').textContent = '9 May - Motor Type1 6999 (Existing Travel)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B9%20May%202025%5D%20Existing%20Travel%20-%20Motor%20Promotion%20Type1%206999%E2%80%8B.jpg';
+                            document.getElementById('modal-description').textContent = 'Motor Type1 promotion 6999 baht for existing travel customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">9</span>
+                            <div class="campaign-indicator motor">🚗</div>
+                        </div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day campaign-day" data-date="15" onclick="
+                            document.getElementById('modal-title').textContent = '15 May - Travel Promotion (Existing Motor)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B15%20May%202025%5D%20Travel%20Promo%20Existing%20Motor%20-%202025-05-15_12_00pm.jpg';
+                            document.getElementById('modal-description').textContent = 'Travel insurance promotion for existing motor customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">15</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day campaign-day cross-sell" data-date="16" onclick="
+                            document.getElementById('modal-title').textContent = '16 May - Cross-sell Saving Insurance';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B16%20May%202025%5D%20X-sell%20Saving%20INS%20G1-3.jpeg';
+                            document.getElementById('modal-description').textContent = 'Cross-sell saving insurance to existing customers (Groups 1-3)';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">16</span>
+                            <div class="campaign-indicator cross-sell">💰</div>
+                        </div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day campaign-day" data-date="23" onclick="
+                            document.getElementById('modal-title').textContent = '23 May - Payday Auto (Existing Travel)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B23%20May%202025%5D%20Existing%20Travel%20-%20Payday%20Auto.jpg';
+                            document.getElementById('modal-description').textContent = 'Payday auto insurance promotion for existing travel customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">23</span>
+                            <div class="campaign-indicator motor">🚗</div>
+                        </div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day campaign-day" data-date="29" onclick="
+                            document.getElementById('modal-title').textContent = '29 May - HEYCHINA (Existing Motor)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B29%20May%202025%5D%20heychina%20-%20Existing%20Motor.jpeg';
+                            document.getElementById('modal-description').textContent = 'HEYCHINA travel promotion for existing motor customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">29</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day">31</div>
+                        <div class="calendar-day empty"></div>
+                    </div>
+                </div>
+                
+                <!-- June Campaign Calendar (Initially Hidden) -->
+                <div id="june-calendar" class="month-calendar-container june-calendar" style="display: none;">
+                    <div class="calendar-header">
+                        <h4>📅 June 2025 Campaign Timeline</h4>
+                        <p>ESCALATING: 6 campaigns sent (Double recommended limit)</p>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="calendar-header-row">
+                            <div class="calendar-day-header">Mo</div>
+                            <div class="calendar-day-header">Tu</div>
+                            <div class="calendar-day-header">We</div>
+                            <div class="calendar-day-header">Th</div>
+                            <div class="calendar-day-header">Fr</div>
+                            <div class="calendar-day-header">Sa</div>
+                            <div class="calendar-day-header">Su</div>
+                        </div>
+                        
+                        <!-- June 2025 Calendar -->
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day campaign-day partnership" data-date="1" onclick="
+                            document.getElementById('modal-title').textContent = '1 June - Partnership Krungsri Boarding Card';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B1%20Jun%202025%5D%20All%20Customers%20-%20Krungsri%20Boarding%20Card%E2%80%8B.jpg';
+                            document.getElementById('modal-description').textContent = 'Partnership campaign with Krungsri for boarding card benefits (All customers)';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">1</span>
+                            <div class="campaign-indicator partnership">🤝</div>
+                        </div>
+                        
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day campaign-day" data-date="4" onclick="
+                            document.getElementById('modal-title').textContent = '4 June - Auto Promotion (Existing Travel)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B4%20June%202025%5D%20Auto%20Promotion%20-%20Exisiting%20Travel.jpg';
+                            document.getElementById('modal-description').textContent = 'Auto insurance promotion for existing travel customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">4</span>
+                            <div class="campaign-indicator motor">🚗</div>
+                        </div>
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day campaign-day" data-date="13" onclick="
+                            document.getElementById('modal-title').textContent = '13 June - Travel Promotion (Existing Motor)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B13%20June%202025%5D%20Travel%20Promotion%20-%20Existing%20Motor.jpg';
+                            document.getElementById('modal-description').textContent = 'Travel insurance promotion targeting existing motor customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">13</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-section">
+                <ul class="bullet-points">
+                    <li><strong>AUTO Crisis:</strong> Sharp decline from 81% (Jan) to 53% (Jun) — losing 28 points in 6 months indicates system degradation</li>
+                    <li><strong>Travel Persistent Failure:</strong> Consistently stuck at ~30% throughout entire period, 50 points below target with no improvement</li>
+                    <li><strong>Auto Short Term Collapse:</strong> Volatile performance with dramatic 13-point crash from 45% to 32% in single month (May→Jun)</li>
+                    <li><strong>Critical Alert:</strong> All product lines failing with accelerating decline trend requiring immediate platform intervention</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Issues - Greeting Message & Rich Menu Mismatch -->
+        <div class="slide">
+            <h2 class="slide-title">Critical UX Issues</h2>
+            <p class="slide-subtitle">Greeting message and Rich Menu inconsistency causing user confusion</p>
+            
+            <div class="issue-container">
+                <div class="issue-section">
+                    <h3 class="issue-title">❌ Current Problem</h3>
+                    <div class="screenshot-container">
+                        <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/before.jpg" 
+                             alt="Current greeting message with inconsistent Rich Menu" 
+                             class="screenshot-image"
+                             loading="lazy">
+                    </div>
+                </div>
+
+                <div class="issue-section">
+                    <h3 class="issue-title">✅ Proposed Solution</h3>
+                    <div class="screenshot-container">
+                        <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/after.jpg" 
+                             alt="Improved greeting message with consistent Rich Menu guidance" 
+                             class="screenshot-image solution-image"
+                             loading="lazy">
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <ul class="bullet-points">
+                    <li><strong>User Confusion:</strong> Greeting message doesn't mention specific insurance types available in Rich Menu, causing disconnect</li>
+                    <li><strong>Missing Context:</strong> Users don't understand how to navigate between greeting message and Rich Menu options</li>
+                    <li><strong>Improved Solution:</strong> Enhanced greeting message explains Rich Menu functionality and 24/7 service availability</li>
+                    <li><strong>Clear Direction:</strong> New message guides users to check premiums and access policy documents through menu items</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: Block Rate Analysis -->
+        <div class="slide">
+            <h2 class="slide-title">Block Rate Crisis</h2>
+            <p class="slide-subtitle">Monthly messaging restrictions show alarming upward trend</p>
+            
+                            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-value">0.190%</div>
+                    <div class="metric-label">Peak Block Rate (April)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">3,361</div>
+                    <div class="metric-label">Total Blocks (6 months)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">12</div>
+                    <div class="metric-label">April Campaigns (4x recommended)</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Monthly Block Rate Trend (Jan - Jun 2025)</div>
+                <div class="chart-wrapper">
+                    <svg class="chart-svg" viewBox="0 0 900 320">
+                        <!-- Grid lines -->
+                        <g class="grid">
+                            <line class="chart-grid" x1="80" y1="40" x2="80" y2="280"></line>
+                            <line class="chart-grid" x1="80" y1="280" x2="860" y2="280"></line>
+                            <!-- Horizontal grid lines -->
+                            <line class="chart-grid" x1="80" y1="232" x2="860" y2="232"></line>
+                            <line class="chart-grid" x1="80" y1="184" x2="860" y2="184"></line>
+                            <line class="chart-grid" x1="80" y1="136" x2="860" y2="136"></line>
+                            <line class="chart-grid" x1="80" y1="88" x2="860" y2="88"></line>
+                            <line class="chart-grid" x1="80" y1="40" x2="860" y2="40"></line>
+                        </g>
+                        
+                        <!-- Y-axis labels -->
+                        <text class="chart-label chart-y-label" x="75" y="285">0.00%</text>
+                        <text class="chart-label chart-y-label" x="75" y="237">0.05%</text>
+                        <text class="chart-label chart-y-label" x="75" y="189">0.10%</text>
+                        <text class="chart-label chart-y-label" x="75" y="141">0.15%</text>
+                        <text class="chart-label chart-y-label" x="75" y="93">0.20%</text>
+                        <text class="chart-label chart-y-label" x="75" y="45">0.25%</text>
+                        
+                        <!-- X-axis labels -->
+                        <text class="chart-label" x="145" y="300">Jan</text>
+                        <text class="chart-label" x="210" y="300">Feb</text>
+                        <text class="chart-label" x="275" y="300">Mar</text>
+                        <text class="chart-label" x="340" y="300">Apr</text>
+                        <text class="chart-label" x="405" y="300">May</text>
+                        <text class="chart-label" x="470" y="300">Jun</text>
+                        
+                        <!-- Block Rate line -->
+                        <polyline class="chart-line line-block" points="145,267 210,224 275,225 340,80 405,257 470,259"></polyline>
+                        
+                        <!-- Data points -->
+                        <circle class="chart-point point-block" cx="145" cy="267" data-value="0.070%"></circle>
+                        <circle class="chart-point point-block" cx="210" cy="224" data-value="0.137%"></circle>
+                        <circle class="chart-point point-block" cx="275" cy="225" data-value="0.112%"></circle>
+                        <circle class="chart-point point-block" cx="340" cy="80" data-value="0.190%"></circle>
+                        <circle class="chart-point point-block" cx="405" cy="257" data-value="0.096%"></circle>
+                        <circle class="chart-point point-block" cx="470" cy="259" data-value="0.093%"></circle>
+                    </svg>
+                </div>
+                
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-block"></div>
+                        <span>Block Rate % (Peak: 0.190% in April)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="block-table">
+                <h3 class="table-title">Monthly Block Rate Breakdown</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Avg Block Rate</th>
+                            <th>Total Blocks</th>
+                            <th>Campaign Count</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-01</td>
+                            <td>0.070%</td>
+                            <td>254</td>
+                            <td>5</td>
+                            <td><span class="status-low">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-02</td>
+                            <td>0.137%</td>
+                            <td>445</td>
+                            <td>9</td>
+                            <td><span class="status-medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-03</td>
+                            <td>0.112%</td>
+                            <td>621</td>
+                            <td>7</td>
+                            <td><span class="status-medium">Medium</span></td>
+                        </tr>
+                        <tr class="april-row" onclick="
+                            var calendar = document.getElementById('april-calendar');
+                            calendar.style.display = calendar.style.display === 'none' || calendar.style.display === '' ? 'block' : 'none';
+                        ">
+                            <td>2025-04</td>
+                            <td>0.190%</td>
+                            <td>851</td>
+                            <td>12</td>
+                            <td><span class="status-high">Critical</span></td>
+                        </tr>
+                        <tr class="may-row" onclick="
+                            var calendar = document.getElementById('may-calendar');
+                            calendar.style.display = calendar.style.display === 'none' || calendar.style.display === '' ? 'block' : 'none';
+                        ">
+                            <td>2025-05</td>
+                            <td>0.096%</td>
+                            <td>598</td>
+                            <td>7</td>
+                            <td><span class="status-low">Low</span></td>
+                        </tr>
+                        <tr class="june-row" onclick="
+                            var calendar = document.getElementById('june-calendar');
+                            calendar.style.display = calendar.style.display === 'none' || calendar.style.display === '' ? 'block' : 'none';
+                        ">
+                            <td>2025-06</td>
+                            <td>0.093%</td>
+                            <td>592</td>
+                            <td>5</td>
+                            <td><span class="status-low">Low</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- April Campaign Calendar (Initially Hidden) -->
+                <div id="april-calendar" class="april-calendar-container" style="display: none;">
+                    <div class="calendar-header">
+                        <h4>📅 April 2025 Campaign Timeline</h4>
+                        <p>CRITICAL: 12 campaigns sent (Click dates to view content)</p>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="calendar-header-row">
+                            <div class="calendar-day-header">Mo</div>
+                            <div class="calendar-day-header">Tu</div>
+                            <div class="calendar-day-header">We</div>
+                            <div class="calendar-day-header">Th</div>
+                            <div class="calendar-day-header">Fr</div>
+                            <div class="calendar-day-header">Sa</div>
+                            <div class="calendar-day-header">Su</div>
+                        </div>
+                        
+                        <!-- Week 1 -->
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day campaign-day cross-sell" data-date="1" onclick="
+                            document.getElementById('modal-title').textContent = '1 April - Cross-sell Savings Insurance';
+                            document.getElementById('modal-image').src = '';
+                            document.getElementById('modal-description').textContent = 'Cross-sell savings insurance promotion to existing customers (Image upload failed)';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">1</span>
+                            <div class="campaign-indicator cross-sell">💰</div>
+                        </div>
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day campaign-day" data-date="3" onclick="
+                            document.getElementById('modal-title').textContent = '3 April - Travel Long Holiday';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B3%20Apr%202025%5D%20Long%20Holiday%20-%20Existing%20Motor%20(fuel%20and%20ev).jpg';
+                            document.getElementById('modal-description').textContent = 'Travel insurance promotion for long holiday';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">3</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day campaign-day" data-date="4" onclick="
+                            document.getElementById('modal-title').textContent = '4 April - Pre-Songkran Motor Promotion';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B4%20Apr%202025%5D%20Pre-Songkran%20-%20Motor%20Promotion%20-%20Non-customer.jpg';
+                            document.getElementById('modal-description').textContent = 'Pre-Songkran motor insurance promotion targeting non-customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">4</span>
+                            <div class="campaign-indicator motor">🚗</div>
+                        </div>
+                        <div class="calendar-day campaign-day" data-date="5" onclick="
+                            document.getElementById('modal-title').textContent = '5 April - Travel Student';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B5%20Apr%202025%5D%20Exsiting%20Motor%20(SUV%20MPV%20Van)%20-%20Travel%20Promotion%20-%20Long%20Holiday.jpeg';
+                            document.getElementById('modal-description').textContent = 'Travel insurance promotion for students';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">5</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day">6</div>
+                        
+                        <!-- Week 2 -->
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day campaign-day" data-date="8" onclick="
+                            document.getElementById('modal-title').textContent = '8 April - Motor Type 1 Promotion';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B8%20Apr%202025%5D%20Motor%20Promotion%20-%20Type1%20-%20Non-customer.jpg';
+                            document.getElementById('modal-description').textContent = 'Motor insurance Type 1 promotion targeting non-customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">8</span>
+                            <div class="campaign-indicator motor">🚗</div>
+                        </div>
+                        <div class="calendar-day campaign-day" data-date="9" onclick="
+                            document.getElementById('modal-title').textContent = '9 April - Travel Long Holiday';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B9%20Apr%202025%5D%20Long%20Holiday%20-%20Existing%20Motor%20(fuel%20and%20ev).jpeg';
+                            document.getElementById('modal-description').textContent = 'Travel insurance promotion for long holiday';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">9</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day campaign-day" data-date="11" onclick="
+                            document.getElementById('modal-title').textContent = '11 April - Long Holidays (Non-customer)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B11%20Apr%202025%5D%20Long%20holidays%20-%20Non-customer.jpg';
+                            document.getElementById('modal-description').textContent = 'Long holidays promotion targeting non-customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">11</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day">13</div>
+                        
+                        <!-- Week 3 -->
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day">20</div>
+                        
+                        <!-- Week 4 -->
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day campaign-day cross-sell" data-date="24" onclick="
+                            document.getElementById('modal-title').textContent = '24 April - Cross-sell Home Insurance';
+                            document.getElementById('modal-image').src = '';
+                            document.getElementById('modal-description').textContent = 'Cross-sell home insurance promotion to existing customers (Image upload failed)';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">24</span>
+                            <div class="campaign-indicator cross-sell">🏠</div>
+                        </div>
+                        <div class="calendar-day campaign-day" data-date="25" onclick="
+                            document.getElementById('modal-title').textContent = '25 April - Existing Customer Motor (Pay Day)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B25%20Apr%202025%5D%20Existing%20customer%20travel%20-%20Pay%20Day.jpg';
+                            document.getElementById('modal-description').textContent = 'Motor insurance promotion for existing customers during pay day period';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">25</span>
+                            <div class="campaign-indicator motor">🚗</div>
+                        </div>
+                        <div class="calendar-day campaign-day" data-date="26" onclick="
+                            document.getElementById('modal-title').textContent = '26 April - Non-customer Travel Long Holiday';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B26%20Apr%202025%5D%20Non-customer%20-%20Travel%20Long%20Holiday%E2%80%8B.jpeg';
+                            document.getElementById('modal-description').textContent = 'Travel insurance promotion for non-customers during long holiday';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">26</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day">27</div>
+                        
+                        <!-- Week 5 -->
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day campaign-day" data-date="29" onclick="
+                            document.getElementById('modal-title').textContent = '29 April - Auto Short-term (Non-customer)';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B29%20Apr%202025%5D%20Non-customer%20-%20Auto%20Short-term_.jpeg';
+                            document.getElementById('modal-description').textContent = 'Auto short-term insurance promotion targeting non-customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">29</span>
+                            <div class="campaign-indicator motor">🚗</div>
+                        </div>
+                        <div class="calendar-day campaign-day" data-date="30" onclick="
+                            document.getElementById('modal-title').textContent = '30 April - Travel Long Holiday';
+                            document.getElementById('modal-image').src = 'https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B30%20Apr%202025%5D%20Non-customer%20-%20Travel%20Long%20Holiday%20copy.jpg';
+                            document.getElementById('modal-description').textContent = 'Travel insurance promotion for long holiday targeting non-customers';
+                            document.getElementById('campaign-modal').style.display = 'flex';
+                        ">
+                            <span class="day-number">30</span>
+                            <div class="campaign-indicator travel">✈️</div>
+                        </div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                        <div class="calendar-day empty"></div>
+                    </div>
+                    
+                    <!-- Campaign Details Modal -->
+                    <div id="campaign-modal" class="campaign-modal" style="display: none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 id="modal-title">Campaign Details</h5>
+                                <button class="modal-close" onclick="document.getElementById('campaign-modal').style.display='none'">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <img id="modal-image" src="" alt="Campaign Content" class="modal-image">
+                                <div id="modal-description" class="modal-description"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-section">
+                <ul class="bullet-points">
+                    <li><strong>April Crisis:</strong> 12 campaigns (4x recommended) caused 0.190% peak block rate with 851 total blocks</li>
+                    <li><strong>May Alarm:</strong> 7 campaigns with 0.096% block rate - dangerous escalation despite lower block rate</li>
+                    <li><strong>June Escalating:</strong> 6 campaigns with 0.093% block rate - double the recommended limit but trending upward</li>
+                    <li><strong>Pattern Warning:</strong> Campaign frequency keeps increasing month-over-month - intervention needed to prevent April repeat</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Next Actions -->
+        <div class="slide">
+            <h2 class="slide-title">Next Actions & Implementation Plan</h2>
+            <p class="slide-subtitle">Strategic initiatives to improve performance and user experience</p>
+            
+            <div class="roadmap-container">
+                <div class="roadmap-header">
+                    <h3 class="roadmap-title">🎯 Implementation Roadmap</h3>
+                </div>
+                
+                <div class="action-timeline">
+                    <div class="action-card priority-high">
+                        <div class="action-header">
+                            <div class="action-icon">📱</div>
+                            <div class="action-meta">
+                                <h4 class="action-title">Enhanced Greeting Message</h4>
+                                <div class="priority-badge high">High Priority</div>
+                            </div>
+                        </div>
+                        <div class="action-content">
+                            <p class="action-description">
+                                Implement improved greeting message and Rich Menu guidance
+                            </p>
+                            <div class="action-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">💬</span>
+                                    <span>Deploy enhanced greeting message</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎛️</span>
+                                    <span>Update Rich Menu explanations</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">📈</span>
+                                    <span>Target: Improve connection rates to 65%+</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-timeline-item">
+                            <div class="timeline-dot"></div>
+                            <span class="timeline-label">Week 1</span>
+                        </div>
+                    </div>
+
+                    <div class="action-card priority-medium">
+                        <div class="action-header">
+                            <div class="action-icon">📧</div>
+                            <div class="action-meta">
+                                <h4 class="action-title">Content Strategy Alignment</h4>
+                                <div class="priority-badge medium">Medium Priority</div>
+                            </div>
+                        </div>
+                        <div class="action-content">
+                            <p class="action-description">
+                                Align with relevant person to optimize promotional content frequency and timing
+                            </p>
+                            <div class="action-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">📅</span>
+                                    <span>Monthly promotion content (standard frequency)</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🏖️</span>
+                                    <span>Additional content during long holiday months</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">⚠️</span>
+                                    <span>April had 12 campaigns vs recommended 2-3 max</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎯</span>
+                                    <span>Target: Reduce block rate to <0.05%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-timeline-item">
+                            <div class="timeline-dot"></div>
+                            <span class="timeline-label">Week 1-2</span>
+                        </div>
+                    </div>
+
+                    <div class="action-card priority-medium">
+                        <div class="action-header">
+                            <div class="action-icon">📊</div>
+                            <div class="action-meta">
+                                <h4 class="action-title">Customer Re-engagement Campaign</h4>
+                                <div class="priority-badge medium">Medium Priority</div>
+                            </div>
+                        </div>
+                        <div class="action-content">
+                            <p class="action-description">
+                                Target existing customers (285 users) in Dfinery who are not connected to LINE channel
+                            </p>
+                            <div class="customer-breakdown">
+                                <div class="breakdown-item">
+                                    <div class="breakdown-icon">🚗</div>
+                                    <div class="breakdown-content">
+                                        <div class="breakdown-number">77</div>
+                                        <div class="breakdown-label">Auto Customers</div>
+                                    </div>
+                                </div>
+                                <div class="breakdown-item">
+                                    <div class="breakdown-icon">✈️</div>
+                                    <div class="breakdown-content">
+                                        <div class="breakdown-number">208</div>
+                                        <div class="breakdown-label">Travel Customers</div>
+                                    </div>
+                                </div>
+                                <div class="breakdown-item total">
+                                    <div class="breakdown-icon">👥</div>
+                                    <div class="breakdown-content">
+                                        <div class="breakdown-number">285</div>
+                                        <div class="breakdown-label">Total Unconnected</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="action-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">📱</span>
+                                    <span>Push notification campaign to encourage LINE connection</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎯</span>
+                                    <span>Segment messaging by product type (Auto vs Travel)</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">📈</span>
+                                    <span>Target: 30% connection rate from campaign</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-timeline-item">
+                            <div class="timeline-dot"></div>
+                            <span class="timeline-label">Week 2-3</span>
+                        </div>
+                    </div>
+
+                    <div class="action-card priority-medium">
+                        <div class="action-header">
+                            <div class="action-icon">⚙️</div>
+                            <div class="action-meta">
+                                <h4 class="action-title">User Preferences Enhancement</h4>
+                                <div class="priority-badge medium">Medium Priority</div>
+                            </div>
+                        </div>
+                        <div class="action-content">
+                            <p class="action-description">
+                                Implement pop-up preferences system in member page for better user control
+                            </p>
+                            <div class="action-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">🔧</span>
+                                    <span>Add pop-up preferences in member page</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">👤</span>
+                                    <span>Test user experience and feedback collection</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">📊</span>
+                                    <span>Monitor preference usage analytics</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-timeline-item">
+                            <div class="timeline-dot"></div>
+                            <span class="timeline-label">Week 3-4</span>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-metrics">
+                <h3 class="metrics-title">🎯 Success Metrics & KPIs</h3>
+                <div class="metrics-grid">
+                    <div class="metric-target">
+                        <div class="target-icon">📧</div>
+                        <div class="target-content">
+                            <div class="target-value">< 0.05%</div>
+                            <div class="target-label">Target Block Rate</div>
+                        </div>
+                    </div>
+                    <div class="metric-target">
+                        <div class="target-icon">📱</div>
+                        <div class="target-content">
+                            <div class="target-value">65%+</div>
+                            <div class="target-label">Connection Rate</div>
+                        </div>
+                    </div>
+                    <div class="metric-target">
+                        <div class="target-icon">👥</div>
+                        <div class="target-content">
+                            <div class="target-value">80%+</div>
+                            <div class="target-label">User Satisfaction</div>
+                        </div>
+                    </div>
+                    <div class="metric-target">
+                        <div class="target-icon">⏱️</div>
+                        <div class="target-content">
+                            <div class="target-value">4 weeks</div>
+                            <div class="target-label">Implementation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Add smooth scrolling and intersection observer for animations
+        const slides = document.querySelectorAll('.slide');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        slides.forEach(slide => {
+            observer.observe(slide);
+        });
+
+        // Add hover tooltips for chart points
+        const chartPoints = document.querySelectorAll('.chart-point');
+        chartPoints.forEach(point => {
+            point.addEventListener('mouseenter', function(e) {
+                const value = this.getAttribute('data-value');
+                // Simple tooltip implementation
+                this.setAttribute('title', value);
+            });
+        });
+
+        // Add click navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === ' ') {
+                window.scrollBy(0, window.innerHeight);
+            } else if (e.key === 'ArrowUp') {
+                window.scrollBy(0, -window.innerHeight);
+            }
+        });
+    </script>
+</body>
+</html>
