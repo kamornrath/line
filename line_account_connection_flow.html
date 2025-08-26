@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Account Connection Flow</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #06C755 0%, #00B04F 100%);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .line-chat-container {
+            max-width: 375px;
+            width: 100%;
+            background: #f8f8f8;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .chat-header {
+            background: #06C755;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .chat-body {
+            padding: 20px;
+            background: #ffffff;
+            min-height: 400px;
+        }
+        
+        .message-bubble {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            max-width: 100%;
+        }
+        
+        .message-body {
+            padding: 20px;
+        }
+        
+        .message-text {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .message-text:last-child {
+            margin-bottom: 0;
+        }
+        
+        .quick-reply-container {
+            padding: 0 20px 20px;
+        }
+        
+        .quick-reply-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .quick-reply-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .quick-reply-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .quick-reply-btn:hover {
+            background: #f5f5f5;
+            border-color: #06C755;
+            color: #06C755;
+        }
+        
+        .quick-reply-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .simulator-info {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .user-response {
+            background: #06C755;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 10px 0 10px auto;
+            max-width: 80%;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .bot-response {
+            background: white;
+            color: #333;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 10px 0;
+            max-width: 90%;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 3px solid #06C755;
+        }
+        
+        .notification-options {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .notification-btn {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 12px 16px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        
+        .notification-btn:hover {
+            background: #e9ecef;
+            border-color: #06C755;
+        }
+        
+        .notification-btn.selected {
+            background: #06C755;
+            color: white;
+            border-color: #06C755;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .flow-step {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .flow-step:last-child {
+            border-bottom: none;
+        }
+        
+        .step-title {
+            background: #06C755;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="simulator-info">
+            <h2>📱 LINE Account Connection Flow</h2>
+            <p>Complete notification settings flow simulation</p>
+        </div>
+        
+        <div class="line-chat-container">
+            <div class="chat-header">
+                💬 LINE Chat - heygoody
+            </div>
+            
+            <div class="chat-body" id="chatBody">
+                <!-- Step 1: Account Connection Success -->
+                <div class="flow-step" id="step1">
+                    <div class="step-title">Step 1: Account Connected</div>
+                    <div class="message-bubble">
+                        <div class="message-body">
+                            <div class="message-text">hey คุณ จอย เชื่อมต่อบัญชีเรียบร้อย!</div>
+                            <div class="message-text">ดูข้อมูลประกันเดินทางได้ที่เมนูด้านล่างนะครับ</div>
+                            <div class="message-text">อยากสอบถามทัก Line หา heygoody ได้ตลอด<br>#พร้อมตอบ24ชั่วโมง</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-reply-container" id="quickReplyStep1">
+                <div class="quick-reply-label">Quick Reply</div>
+                <div class="quick-reply-buttons">
+                    <button class="quick-reply-btn" onclick="showNotificationSettings()">
+                        ตั้งค่าการแจ้งเตือน
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Notification Settings (Initially Hidden) -->
+            <div class="quick-reply-container hidden" id="quickReplyStep2">
+                <div class="quick-reply-label">เลือกประเภทการแจ้งเตือนที่ต้องการ</div>
+                <div class="quick-reply-buttons">
+                    <button class="quick-reply-btn" onclick="selectNotification('เตือนทุกโปร')">
+                        เตือนทุกโปร
+                    </button>
+                    <button class="quick-reply-btn" onclick="selectNotification('เฉพาะแจ้งเตือนต่อประกัน')">
+                        เฉพาะแจ้งเตือนต่อประกัน
+                    </button>
+                    <button class="quick-reply-btn" onclick="selectNotification('ขอเฉพาะ big event นะ')">
+                        ขอเฉพาะ big event นะ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showNotificationSettings() {
+            const chatBody = document.getElementById('chatBody');
+            const quickReplyStep1 = document.getElementById('quickReplyStep1');
+            const quickReplyStep2 = document.getElementById('quickReplyStep2');
+            
+            // Add user response
+            const userBubble = document.createElement('div');
+            userBubble.className = 'user-response';
+            userBubble.textContent = 'ตั้งค่าการแจ้งเตือน';
+            chatBody.appendChild(userBubble);
+            
+            // Add bot response
+            setTimeout(() => {
+                const botResponse = document.createElement('div');
+                botResponse.className = 'bot-response';
+                botResponse.innerHTML = `
+                    <div class="step-title">Step 2: Notification Settings</div>
+                    <div>เลือกประเภทการแจ้งเตือนที่คุณต้องการได้เลยค่ะ 📢<br><br>
+                    <strong>🔔 เตือนทุกโปร</strong> - รับข่าวสารโปรโมชั่นทั้งหมด<br>
+                    <strong>🚗 เฉพาะแจ้งเตือนต่อประกัน</strong> - เฉพาะเรื่องประกันรถยนต์<br>
+                    <strong>⭐ ขอเฉพาะ big event นะ</strong> - เฉพาะงานใหญ่และโปรพิเศษ</div>
+                `;
+                chatBody.appendChild(botResponse);
+                
+                // Hide step 1 quick reply and show step 2
+                quickReplyStep1.classList.add('hidden');
+                quickReplyStep2.classList.remove('hidden');
+                
+                // Scroll to bottom
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 800);
+        }
+        
+        function selectNotification(choice) {
+            const chatBody = document.getElementById('chatBody');
+            const quickReplyStep2 = document.getElementById('quickReplyStep2');
+            
+            // Add user response
+            const userBubble = document.createElement('div');
+            userBubble.className = 'user-response';
+            userBubble.textContent = choice;
+            chatBody.appendChild(userBubble);
+            
+            // Add confirmation response
+            setTimeout(() => {
+                const confirmResponse = document.createElement('div');
+                confirmResponse.className = 'bot-response';
+                
+                let responseText = '';
+                switch(choice) {
+                    case 'เตือนทุกโปร':
+                        responseText = '✅ ตั้งค่าเรียบร้อย! คุณจะได้รับการแจ้งเตือนโปรโมชั่นทั้งหมดจาก heygoody<br><br>📱 สามารถเปลี่ยนการตั้งค่าได้ตลอดเวลาใน เมนู > การตั้งค่า';
+                        break;
+                    case 'เฉพาะแจ้งเตือนต่อประกัน':
+                        responseText = '✅ ตั้งค่าเรียบร้อย! คุณจะได้รับเฉพาะการแจ้งเตือนเกี่ยวกับการต่อประกันรถยนต์<br><br>🚗 จะแจ้งเตือนก่อนหมดอายุ 30, 7, และ 1 วัน';
+                        break;
+                    case 'ขอเฉพาะ big event นะ':
+                        responseText = '✅ ตั้งค่าเรียบร้อย! คุณจะได้รับเฉพาะข่าวสารงานใหญ่และโปรโมชั่นพิเศษ<br><br>⭐ จะมีไม่เกิน 2-3 ครั้งต่อเดือน รับรองไม่รบกวน!';
+                        break;
+                }
+                
+                confirmResponse.innerHTML = `
+                    <div class="step-title">Step 3: Settings Confirmed</div>
+                    <div>${responseText}</div>
+                `;
+                chatBody.appendChild(confirmResponse);
+                
+                // Hide quick reply buttons
+                quickReplyStep2.style.opacity = '0.5';
+                quickReplyStep2.style.pointerEvents = 'none';
+                
+                // Scroll to bottom
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 800);
+        }
+        
+        // Add interactive hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.quick-reply-btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-1px)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

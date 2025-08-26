@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Flex Message Simulator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #06C755 0%, #00B04F 100%);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .line-chat-container {
+            max-width: 375px;
+            width: 100%;
+            background: #f8f8f8;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .chat-header {
+            background: #06C755;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .chat-body {
+            padding: 20px;
+            background: #ffffff;
+            min-height: 400px;
+        }
+        
+        .message-bubble {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            max-width: 100%;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 250px;
+            background-image: url('https://www.heygoody.com/heygoody/media/cdp/line/renew/Auto_Renewal_16July_25Line_7days.jpg');
+            background-size: cover;
+            background-position: center;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .hero-image:hover {
+            opacity: 0.9;
+        }
+        
+        .message-body {
+            padding: 20px;
+        }
+        
+        .main-text {
+            font-size: 18px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .warning-text {
+            color: #333;
+        }
+        
+        .promo-text {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .discount-text {
+            color: #FF0000;
+            font-weight: bold;
+        }
+        
+        .action-text {
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .renew-button {
+            background: #13875d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .renew-button:hover {
+            background: #0f6b47;
+        }
+        
+        .quick-reply-container {
+            padding: 0 20px 20px;
+        }
+        
+        .quick-reply-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .quick-reply-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .quick-reply-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .quick-reply-btn:hover {
+            background: #f5f5f5;
+            border-color: #06C755;
+            color: #06C755;
+        }
+        
+        .quick-reply-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .simulator-info {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .image-placeholder {
+            background: #f0f0f0;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="simulator-info">
+            <h2>📱 LINE Flex Message Preview</h2>
+            <p>Interactive simulation of your insurance renewal message</p>
+        </div>
+        
+        <div class="line-chat-container">
+            <div class="chat-header">
+                💬 LINE Chat
+            </div>
+            
+            <div class="chat-body">
+                <div class="message-bubble">
+                    <div class="hero-image" onclick="window.open('http://linecorp.com/', '_blank')">
+                        <div class="image-placeholder">Insurance Renewal Image</div>
+                    </div>
+                    
+                    <div class="message-body">
+                        <div class="main-text">
+                            <span class="warning-text">⚠️ อีก 7 วัน! รถทะเบียน 6ขค8211 ประกันจะหมดวันที่ 28 ก.ค. 68</span>
+                        </div>
+                        
+                        <div class="promo-text">
+                            ต่อทันทีวันนี้ ได้โปรฯ เดิม:<br>
+                            <span class="discount-text">✅ ลด 5% เหลือ 11,400 บาท</span><br>
+                            ✅ ฟรี Power Bank 10,000 mAh<br>
+                            ✅ ขับต่อได้สบายใจไม่สะดุด
+                        </div>
+                        
+                        <div class="action-text">
+                            📍 กดต่อเลย 👇
+                        </div>
+                        
+                        <button class="renew-button" onclick="window.open('http://linecorp.com/', '_blank')">
+                            ต่อประกัน
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-reply-container">
+                <div class="quick-reply-label">Quick Reply</div>
+                <div class="quick-reply-buttons">
+                    <button class="quick-reply-btn" onclick="handleQuickReply('ไว้แจ้งเตือนอีกครั้งนะ')">
+                        ไว้แจ้งเตือนอีกครั้งนะ
+                    </button>
+                    <button class="quick-reply-btn" onclick="handleQuickReply('ต่อประกันกับเจ้าอื่นไปแล้ว')">
+                        ต่อประกันกับเจ้าอื่นไปแล้ว
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleQuickReply(text) {
+            // Create a temporary message bubble to show the user's response
+            const chatBody = document.querySelector('.chat-body');
+            
+            // Create user message bubble
+            const userBubble = document.createElement('div');
+            userBubble.style.cssText = `
+                background: #06C755;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 15px;
+                margin: 10px 0 10px auto;
+                max-width: 80%;
+                font-size: 14px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            `;
+            userBubble.textContent = text;
+            
+            chatBody.appendChild(userBubble);
+            
+            // Hide quick reply buttons after selection
+            const quickReplyContainer = document.querySelector('.quick-reply-container');
+            quickReplyContainer.style.opacity = '0.5';
+            quickReplyContainer.style.pointerEvents = 'none';
+            
+            // Show confirmation message
+            setTimeout(() => {
+                const confirmBubble = document.createElement('div');
+                confirmBubble.style.cssText = `
+                    background: white;
+                    color: #333;
+                    padding: 10px 15px;
+                    border-radius: 15px;
+                    margin: 10px 0;
+                    max-width: 80%;
+                    font-size: 14px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    border-left: 3px solid #06C755;
+                `;
+                
+                if (text === 'ไว้แจ้งเตือนอีกครั้งนะ') {
+                    confirmBubble.textContent = 'ได้เลย เดี๋ยวถึงเวลาเราจะกระซิบเบา ๆ ไปหาอีกทีนะ 😊';
+                } else {
+                    confirmBubble.textContent = 'คิดถึงนะ ถ้าอยากได้ประกันอีกเมื่อไหร่ กลับมาหา heygoody ได้เลย 🧡';
+                }
+                
+                chatBody.appendChild(confirmBubble);
+            }, 800);
+        }
+        
+        // Add some interactive hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.quick-reply-btn, .renew-button');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-1px)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
