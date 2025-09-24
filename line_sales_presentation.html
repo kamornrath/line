@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Channel Sales Performance - September 2025</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .slide:hover {
+            transform: translateY(-5px);
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #00c851 0%, #00a644 100%);
+            color: white;
+            padding: 60px 40px;
+        }
+
+        .title-slide h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .title-slide h2 {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .slide h2 {
+            color: #00a644;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #00c851;
+            padding-bottom: 10px;
+        }
+
+        .slide h3 {
+            color: #333;
+            font-size: 1.6rem;
+            margin: 25px 0 15px 0;
+        }
+
+        .insight-card {
+            background: #f8f9fa;
+            border-left: 5px solid #00c851;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .insight-card:hover {
+            background: #e8f5e8;
+        }
+
+        .stat-highlight {
+            background: linear-gradient(135deg, #00c851 0%, #00a644 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 10px 10px 10px 0;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .campaign-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .campaign-list li {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #00c851;
+            transition: transform 0.2s ease;
+        }
+
+        .campaign-list li:hover {
+            transform: translateX(10px);
+            background: #e8f5e8;
+        }
+
+        .performance-badge {
+            background: #00c851;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .key-takeaways {
+            background: linear-gradient(135deg, #4c63d2 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .key-takeaways h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .key-takeaways ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .key-takeaways li {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .key-takeaways li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .date-range {
+            color: #666;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .title-slide h1 {
+                font-size: 2rem;
+            }
+            
+            .slide {
+                padding: 20px;
+                margin: 15px 0;
+            }
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <div class="logo">📊</div>
+            <h1>LINE Channel Sales Performance</h1>
+            <h2>September 2025 Campaign Analysis</h2>
+            <p style="margin-top: 30px; font-size: 1.1rem;">Data-Driven Insights & Strategic Recommendations</p>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="slide">
+            <h2>📈 Executive Summary</h2>
+            <div class="insight-card">
+                <h3>Overall Performance Highlights</h3>
+                <div style="margin: 20px 0;">
+                    <span class="stat-highlight">1,347 Total Conversions</span>
+                    <span class="stat-highlight">10 Active Campaigns</span>
+                    <span class="stat-highlight">23 Days Tracking</span>
+                </div>
+                <p><strong>Key Finding:</strong> Multi-layered campaign strategy successfully drives sustained performance with strong carryover effects from previous months.</p>
+            </div>
+        </div>
+
+        <!-- Top Performing Campaigns -->
+        <div class="slide">
+            <h2>🏆 Top Performing Campaigns</h2>
+            <div class="chart-container">
+                <canvas id="topCampaignsChart"></canvas>
+            </div>
+            <ul class="campaign-list">
+                <li><strong>Rich Menu ("-")</strong> <span class="performance-badge">498 conversions</span> <span class="date-range">Consistent daily performance</span></li>
+                <li><strong>Extended Birthday (extendbd_link_sep2025)</strong> <span class="performance-badge">210 conversions</span> <span class="date-range">Sep 5-23, sustained momentum</span></li>
+                <li><strong>Birthday R1 (hbd_r1_link_sep2025)</strong> <span class="performance-badge">35 conversions</span> <span class="date-range">High-impact short campaign</span></li>
+                <li><strong>September Promotion</strong> <span class="performance-badge">27 conversions</span> <span class="date-range">14-day campaign</span></li>
+            </ul>
+        </div>
+
+        <!-- Key Insights Validation -->
+        <div class="slide">
+            <h2>✅ Strategic Insights Validation</h2>
+            
+            <div class="two-column">
+                <div>
+                    <h3>1. Extended Campaign Success</h3>
+                    <div class="insight-card">
+                        <p><strong>Campaign:</strong> extendbd_link_sep2025</p>
+                        <p><strong>Launch:</strong> September 5, 2025</p>
+                        <p><strong>Performance:</strong> 210 conversions across 19 days</p>
+                        <p><strong>Pattern:</strong> Strong launch (125 conversions), sustained daily performance (1-12 daily)</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>2. Rich Menu Dominance</h3>
+                    <div class="insight-card">
+                        <p><strong>Channel:</strong> Rich Menu ("-")</p>
+                        <p><strong>Performance:</strong> 498 conversions (37% of total)</p>
+                        <p><strong>Peak Days:</strong> Sep 11 (55), Sep 5 (35), Sep 4 (31)</p>
+                        <p><strong>Insight:</strong> Organic traffic highly valuable</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>3. Previous Month Campaign Carryover</h3>
+            <div class="insight-card">
+                <p><strong>July Campaigns:</strong> 22 conversions still generating in September</p>
+                <p><strong>August Campaigns:</strong> 4 conversions carrying over</p>
+                <p><strong>Strategic Value:</strong> Demonstrates effective campaign longevity and brand recall</p>
+            </div>
+        </div>
+
+        <!-- Campaign Performance Timeline -->
+        <div class="slide">
+            <h2>📅 Campaign Performance Timeline</h2>
+            <div class="chart-container">
+                <canvas id="timelineChart"></canvas>
+            </div>
+            <div class="two-column">
+                <div>
+                    <h3>Peak Performance Days</h3>
+                    <ul class="campaign-list">
+                        <li><strong>Sep 5:</strong> Campaign launch spike (160 total)</li>
+                        <li><strong>Sep 11:</strong> Rich menu peak (55 conversions)</li>
+                        <li><strong>Sep 4:</strong> Pre-launch momentum (32 conversions)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Campaign Categories</h3>
+                    <ul class="campaign-list">
+                        <li><strong>Birthday Campaigns:</strong> 271 conversions</li>
+                        <li><strong>Promotional Campaigns:</strong> 50 conversions</li>
+                        <li><strong>Organic/Rich Menu:</strong> 498 conversions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Recommendations -->
+        <div class="slide">
+            <h2>🎯 Strategic Recommendations</h2>
+            
+            <div class="key-takeaways">
+                <h3>Key Takeaways & Next Steps</h3>
+                <ul>
+                    <li><strong>Rich Menu Optimization:</strong> Rich menu drives 37% of conversions - consider A/B testing different menu layouts and CTAs</li>
+                    <li><strong>Extended Campaign Model:</strong> Sep 5 campaign shows sustained performance - replicate this model for future launches</li>
+                    <li><strong>Birthday Campaign Success:</strong> Birthday-themed campaigns generate high engagement - expand this category</li>
+                    <li><strong>Campaign Layering:</strong> Multi-month carryover proves effective - maintain this strategy</li>
+                    <li><strong>Peak Day Analysis:</strong> Focus budget allocation on identified high-performance days/patterns</li>
+                </ul>
+            </div>
+
+            <div class="insight-card">
+                <h3>🚀 Immediate Actions</h3>
+                <p><strong>1.</strong> Continue extended campaign format for upcoming campaigns</p>
+                <p><strong>2.</strong> Optimize rich menu based on Sep 11 peak performance insights</p>
+                <p><strong>3.</strong> Plan birthday campaign series for sustained engagement</p>
+                <p><strong>4.</strong> Analyze and replicate Sep 5 launch day success factors</p>
+            </div>
+        </div>
+
+        <!-- LINE Connection Rate Analysis -->
+        <div class="slide">
+            <h2>📱 LINE Connection Rate Analysis</h2>
+            <div class="insight-card" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white;">
+                <h3 style="color: white;">🎂 Birthday Campaign Connection Discovery</h3>
+                <div style="margin: 20px 0;">
+                    <span class="stat-highlight" style="background: rgba(255,255,255,0.2);">+18.1% Higher Connection Rates</span>
+                    <span class="stat-highlight" style="background: rgba(255,255,255,0.2);">0.490% Peak Rate</span>
+                    <span class="stat-highlight" style="background: rgba(255,255,255,0.2);">Top 4 Days = Birthday Period</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="connectionRateChart"></canvas>
+            </div>
+
+            <div class="two-column">
+                <div>
+                    <h3>🏆 Top Connection Rate Days</h3>
+                    <ul class="campaign-list">
+                        <li><strong>Sep 14:</strong> 0.490% 🎂 <span class="performance-badge">Birthday Period Peak</span></li>
+                        <li><strong>Sep 5:</strong> 0.451% 🎂 <span class="performance-badge">Launch Sweet Spot</span></li>
+                        <li><strong>Sep 4:</strong> 0.436% 🎂 <span class="performance-badge">Pre-Launch Momentum</span></li>
+                        <li><strong>Sep 21:</strong> 0.429% 🎂 <span class="performance-badge">Extended Campaign</span></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3>📊 Connection vs Sales Correlation</h3>
+                    <div class="insight-card">
+                        <p><strong>Sep 5 "Sweet Spot":</strong><br>0.451% connection + 160 conversions</p>
+                        <p><strong>Sep 11 Quality Factor:</strong><br>0.321% connection + 64 rich menu conversions</p>
+                        <p><strong>Birthday Period:</strong><br>0.377% avg vs 0.319% non-birthday</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Rate Strategic Insights -->
+        <div class="slide">
+            <h2>🔗 Connection Quality Drives Sales Performance</h2>
+            
+            <div class="chart-container">
+                <canvas id="correlationChart"></canvas>
+            </div>
+
+            <div class="key-takeaways">
+                <h3>🚀 Strategic Connection Insights</h3>
+                <ul>
+                    <li><strong>Birthday Theme = Connection Magnet:</strong> Emotional campaigns drive 18% higher connection rates</li>
+                    <li><strong>Pre-Launch Momentum Matters:</strong> Sep 4 shows anticipation builds connection quality (0.436%)</li>
+                    <li><strong>Sweet Spot Formula:</strong> High connection rate + targeted campaign = peak sales performance</li>
+                    <li><strong>Sustained Engagement:</strong> Birthday campaigns maintain elevated connection rates for weeks</li>
+                    <li><strong>Quality Over Quantity:</strong> Rich menu converts well even with moderate connection rates</li>
+                </ul>
+            </div>
+
+            <div class="two-column">
+                <div class="insight-card">
+                    <h3>📈 Volume × Efficiency Leaders</h3>
+                    <p><strong>1. Sep 4:</strong> 0.436% × 1,819 customers = 793 total connections</p>
+                    <p><strong>2. Sep 5:</strong> 0.451% × 967 customers = 436 total connections</p>
+                    <p><strong>3. Sep 23:</strong> 0.394% × 236 customers = 93 total connections</p>
+                </div>
+                
+                <div class="insight-card">
+                    <h3>🎯 Campaign Optimization Formula</h3>
+                    <p><strong>Emotional Theme</strong> (Birthday) + <strong>Pre-Launch Build-up</strong> + <strong>Extended Duration</strong> = <strong>Superior Connection Quality</strong></p>
+                    <p style="margin-top: 15px; font-weight: bold; color: #00a644;">Result: Higher connection rates that sustain throughout campaign lifecycle</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="slide">
+            <h2>📊 Performance Summary</h2>
+            <div class="chart-container">
+                <canvas id="summaryChart"></canvas>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <div class="stat-highlight" style="font-size: 1.3rem; margin: 10px;">Campaign Strategy: VALIDATED ✓</div>
+                <div class="stat-highlight" style="font-size: 1.3rem; margin: 10px;">Connection Quality: OPTIMIZED ✓</div>
+                <div class="stat-highlight" style="font-size: 1.3rem; margin: 10px;">Sustainable Growth: ON TRACK ✓</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart configuration
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.font.size = 12;
+        
+        // Top Campaigns Chart
+        const topCampaignsCtx = document.getElementById('topCampaignsChart').getContext('2d');
+        new Chart(topCampaignsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Rich Menu (-)', 'Extended Birthday', 'Birthday R1', 'Sep Promotion', 'Birthday Promotion', 'Guest Link (July)', 'Teaser Link', '20% Off (August)'],
+                datasets: [{
+                    label: 'Conversions',
+                    data: [498, 210, 35, 27, 26, 21, 18, 4],
+                    backgroundColor: [
+                        '#00c851', '#00a644', '#4c63d2', '#6c5ce7', 
+                        '#ff6b6b', '#4ecdc4', '#45b7d1', '#ffa726'
+                    ],
+                    borderColor: 'rgba(0,0,0,0.1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Timeline Chart
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sep 1', 'Sep 2', 'Sep 3', 'Sep 4', 'Sep 5', 'Sep 6', 'Sep 7', 'Sep 8', 'Sep 9', 'Sep 10', 'Sep 11', 'Sep 12', 'Sep 13', 'Sep 14', 'Sep 15'],
+                datasets: [{
+                    label: 'Extended Campaign',
+                    data: [0, 0, 0, 0, 125, 12, 4, 7, 6, 3, 9, 1, 9, 3, 7],
+                    borderColor: '#00c851',
+                    backgroundColor: 'rgba(0, 200, 81, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Rich Menu (-)',
+                    data: [0, 1, 1, 31, 35, 8, 4, 7, 2, 9, 55, 12, 8, 15, 22],
+                    borderColor: '#4c63d2',
+                    backgroundColor: 'rgba(76, 99, 210, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Connection Rate Chart
+        const connectionRateCtx = document.getElementById('connectionRateChart').getContext('2d');
+        new Chart(connectionRateCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sep 1', 'Sep 2', 'Sep 3', 'Sep 4', 'Sep 5', 'Sep 6', 'Sep 7', 'Sep 8', 'Sep 9', 'Sep 10', 'Sep 11', 'Sep 12', 'Sep 13', 'Sep 14', 'Sep 15', 'Sep 16', 'Sep 17', 'Sep 18', 'Sep 19', 'Sep 20', 'Sep 21', 'Sep 22', 'Sep 23', 'Sep 24'],
+                datasets: [{
+                    label: 'Connection Rate (%)',
+                    data: [0.303, 0.329, 0.270, 0.436, 0.451, 0.333, 0.353, 0.296, 0.306, 0.290, 0.321, 0.352, 0.403, 0.490, 0.327, 0.395, 0.342, 0.368, 0.393, 0.374, 0.429, 0.333, 0.394, 0.322],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: function(context) {
+                        const day = context.dataIndex + 1;
+                        // Highlight birthday campaign period (Sep 4-21)
+                        return (day >= 4 && day <= 21) ? '#ff6b6b' : '#ccc';
+                    },
+                    pointRadius: function(context) {
+                        const day = context.dataIndex + 1;
+                        // Bigger points for top connection days
+                        return [4, 5, 14, 21].includes(day) ? 8 : 4;
+                    }
+                }, {
+                    label: 'Average (0.36%)',
+                    data: Array(24).fill(0.36),
+                    borderColor: '#999',
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const day = context.dataIndex + 1;
+                                if (day === 4) return '🎂 Pre-Birthday Campaign';
+                                if (day === 5) return '🎂 Birthday Launch (Sweet Spot)';
+                                if (day === 14) return '🎂 Birthday Peak';
+                                if (day === 21) return '🎂 Extended Campaign';
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Connection Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Connection vs Sales Correlation Chart
+        const correlationCtx = document.getElementById('correlationChart').getContext('2d');
+        new Chart(correlationCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Birthday Campaign Days',
+                    data: [
+                        {x: 0.436, y: 32, label: 'Sep 4'},
+                        {x: 0.451, y: 160, label: 'Sep 5'},
+                        {x: 0.490, y: 25, label: 'Sep 14'},
+                        {x: 0.429, y: 15, label: 'Sep 21'}
+                    ],
+                    backgroundColor: '#ff6b6b',
+                    borderColor: '#ee5a24',
+                    pointRadius: 12,
+                    pointHoverRadius: 15
+                }, {
+                    label: 'Regular Days',
+                    data: [
+                        {x: 0.321, y: 64, label: 'Sep 11 (Rich Menu)'},
+                        {x: 0.353, y: 20, label: 'Sep 7'},
+                        {x: 0.333, y: 18, label: 'Sep 6'},
+                        {x: 0.395, y: 12, label: 'Sep 16'}
+                    ],
+                    backgroundColor: '#4c63d2',
+                    borderColor: '#3742fa',
+                    pointRadius: 8,
+                    pointHoverRadius: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.data[context.dataIndex].label}: ${context.parsed.x}% connection rate, ${context.parsed.y} conversions`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Connection Rate (%)'
+                        },
+                        min: 0.3,
+                        max: 0.5
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Sales Conversions'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Summary Pie Chart
+        const summaryCtx = document.getElementById('summaryChart').getContext('2d');
+        new Chart(summaryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Rich Menu (37%)', 'Extended Campaign (16%)', 'Other Campaigns (47%)'],
+                datasets: [{
+                    data: [498, 210, 639],
+                    backgroundColor: ['#00c851', '#4c63d2', '#6c5ce7'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
