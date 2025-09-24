@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Connection Rate - September 2025 Update</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideIn 0.8s ease forwards;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .slide:nth-child(odd) {
+            animation-delay: 0.2s;
+        }
+
+        .slide:nth-child(even) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+            color: white;
+            border: none;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .title-slide h2 {
+            font-size: 1.8rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .title-slide .date {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.6rem;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-card.positive {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+        }
+
+        .metric-card.warning {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #2c3e50;
+        }
+
+        .metric-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            margin-top: 8px;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .insight-box {
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid;
+        }
+
+        .insight-box.positive {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-color: #28a745;
+        }
+
+        .insight-box.warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-color: #ffc107;
+        }
+
+        .insight-box h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .insight-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .insight-box li {
+            margin: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        .insight-box.positive li::before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+
+        .insight-box.warning li::before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+        }
+
+        .recommendation-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .recommendation-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .recommendation-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .recommendation-card li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .recommendation-card li::before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            color: #34495e;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .highlight-stat {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .section-divider {
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 2px;
+            margin: 40px 0;
+        }
+
+        .thumbnail {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            border: 2px solid #3498db;
+            transition: all 0.3s ease;
+            vertical-align: middle;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.1);
+            border-color: #2980b9;
+        }
+
+        .campaign-action {
+            cursor: pointer;
+            color: #3498db;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .campaign-action:hover {
+            color: #2980b9;
+            background: rgba(52, 152, 219, 0.1);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .modal-title {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .presentation-container {
+                padding: 15px;
+            }
+
+            .slide {
+                padding: 25px;
+                margin: 20px 0;
+            }
+
+            .title-slide h1 {
+                font-size: 2.5rem;
+            }
+
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        
+        <!-- Title Slide -->
+        <div class="slide title-slide">
+            <h1>📊 LINE Connection Rate</h1>
+            <h2>September 2025 Performance Review</h2>
+            <div class="date">Business Team Update | September 2025</div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="slide">
+            <h2>📈 Executive Summary</h2>
+            <div class="metric-grid">
+                <div class="metric-card positive">
+                    <div class="metric-number">39.7%</div>
+                    <div class="metric-label">Connection Rate</div>
+                    <div class="metric-change">+4.1pp vs August</div>
+                </div>
+                <div class="metric-card positive">
+                    <div class="metric-number">6,536</div>
+                    <div class="metric-label">Total Customers</div>
+                    <div class="metric-change">+106% vs August</div>
+                </div>
+                <div class="metric-card warning">
+                    <div class="metric-number">0.09%</div>
+                    <div class="metric-label">Block Rate</div>
+                    <div class="metric-change">732 total blocks</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">2,598</div>
+                    <div class="metric-label">Connected Users</div>
+                    <div class="metric-change">+1,465 vs August</div>
+                </div>
+            </div>
+            
+            <div class="highlight-stat">
+                🎯 First connection rate improvement in 8 months - messaging optimization is working!
+            </div>
+        </div>
+
+        <!-- Monthly Trends Chart -->
+        <div class="slide">
+            <h2>📊 Monthly Connection Rate Trends</h2>
+            <div class="chart-container">
+                <canvas id="connectionTrendChart"></canvas>
+            </div>
+            <div class="highlight-stat">
+                September marks a significant turnaround with connection rates climbing back above 39%
+            </div>
+        </div>
+
+        <!-- Block Rate Analysis -->
+        <div class="slide">
+            <h2>🚫 Block Rate Analysis</h2>
+            <div class="chart-container">
+                <canvas id="blockRateChart"></canvas>
+            </div>
+            
+            <h3>September Campaign Impact Breakdown</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Campaign Action</th>
+                        <th>Blocks</th>
+                        <th>Non-Customer</th>
+                        <th>Existing Travel</th>
+                        <th>Existing Auto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sep 1</td>
+                        <td><span class="campaign-action" onclick="openModal('sep1Modal')">Teaser Message</span></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Sep 4</td>
+                        <td><span class="campaign-action" onclick="openModal('sep4Modal')">Birthday Campaign + Details</span></td>
+                        <td>248</td>
+                        <td>196 (79%)</td>
+                        <td>36 (15%)<br><small>31 expired, 5 active</small></td>
+                        <td>16 (6%)<br><small>4 expired, 12 active</small></td>
+                    </tr>
+                    <tr>
+                        <td>Sep 5</td>
+                        <td><span class="campaign-action" onclick="openModal('sep5Modal')">Extended Promotion</span></td>
+                        <td>40</td>
+                        <td>28 (70%)</td>
+                        <td>9 (23%)<br><small>all expired</small></td>
+                        <td>3 (7%)<br><small>all expired</small></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Destinations -->
+        <div class="slide">
+            <h2>🌍 Top Performing Destinations</h2>
+            <div class="chart-container">
+                <canvas id="destinationChart"></canvas>
+            </div>
+            
+            <div class="insights-grid">
+                <div class="insight-box positive">
+                    <h4>🎯 High Performers</h4>
+                    <ul>
+                        <li>China leads with 37.2% rate (6,061 customers)</li>
+                        <li>Japan maintains 36.1% with highest volume (13,960 customers)</li>
+                        <li>Asian markets consistently above 35%</li>
+                        <li>Worldwide coverage shows 39.1% potential</li>
+                    </ul>
+                </div>
+                <div class="insight-box warning">
+                    <h4>⚠️ Opportunities</h4>
+                    <ul>
+                        <li>Laos at 8.9% needs targeted strategy</li>
+                        <li>Vietnam and Malaysia under 30%</li>
+                        <li>Southeast Asia markets underperforming</li>
+                        <li>Room for growth in emerging markets</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Findings -->
+        <div class="slide">
+            <h2>🔍 Key Findings & Impact Analysis</h2>
+            
+            <h3>✅ What's Working</h3>
+            <div class="insight-box positive">
+                <ul>
+                    <li>Modified greeting messages improved user understanding
+                        <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/S__103694393_0.jpg" 
+                             alt="Greeting Message" 
+                             class="thumbnail" 
+                             onclick="openModal('greetingModal')">
+                    </li>
+                    <li>Banner additions for new LINE users increased visibility</li>
+                    <li>Birthday campaign drove significant engagement (+106% customers)</li>
+                    <li>First connection rate improvement in 8 consecutive months</li>
+                    <li>Strong performance across major Asian markets</li>
+                </ul>
+            </div>
+
+            <h3>⚠️ Areas for Optimization</h3>
+            <div class="insight-box warning">
+                <ul>
+                    <li>Block rate spiked during intensive campaign messaging</li>
+                    <li>77% of blocks from non-customers suggest targeting issues</li>
+                    <li>Rapid message sequence (Sep 1→4→5) overwhelmed users</li>
+                    <li>Campaign intensity directly correlates with block rates</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Strategic Recommendations -->
+        <div class="slide">
+            <h2>💡 Strategic Recommendations</h2>
+            
+            <div class="recommendation-card">
+                <h4>🎯 Immediate Actions (Next 30 Days)</h4>
+                <ul>
+                    <li>Implement minimum 72-hour intervals between campaign messages</li>
+                    <li>A/B test message timing for future birthday campaigns</li>
+                    <li>Create separate messaging calendars for existing vs. new customers</li>
+                    <li>Improve audience segmentation to reduce non-customer blocks</li>
+                    <li>Document and replicate September's successful greeting message changes</li>
+                </ul>
+            </div>
+
+            <div class="recommendation-card">
+                <h4>📈 Medium-Term Initiatives (Next 90 Days)</h4>
+                <ul>
+                    <li>Develop product-specific communication strategies (AUTO vs Travel)</li>
+                    <li>Create destination-specific messaging templates</li>
+                    <li>Establish maximum monthly message limits per customer segment</li>
+                    <li>Implement real-time block rate monitoring during campaigns</li>
+                    <li>Design progressive engagement strategies based on customer lifecycle</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Greeting Message Improvements -->
+        <div class="slide">
+            <h2>✅ Greeting Message Optimization Success</h2>
+            
+            <div class="highlight-stat">
+                Modified greeting messages for clarity - contributing to our 4.1pp improvement!
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/S__103694393_0.jpg" 
+                     alt="Updated Greeting Message Example" 
+                     style="max-width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);">
+            </div>
+
+            <div class="insight-box positive">
+                <h4>🎯 Key Improvements Made</h4>
+                <ul>
+                    <li>Clearer messaging structure and call-to-action</li>
+                    <li>Enhanced visual banners for new LINE users</li>
+                    <li>Improved user understanding of connection process</li>
+                    <li>First connection rate improvement in 8 consecutive months</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- September Campaign Messages -->
+        <div class="slide">
+            <h2>📱 September Campaign Message Timeline</h2>
+            
+            <h3>Sep 1: Birthday Campaign Teaser</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B1%20Sep%202025%5D%20Birthday%20Teaser.jpeg" 
+                     alt="September 1 Teaser Message" 
+                     style="max-width: 80%; height: auto; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+            </div>
+
+            <h3>Sep 4: Birthday Campaign Launch + Promotion Details</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B4%20Sep%202025%5D%20Birthday%20Teaser1.jpg" 
+                     alt="September 4 Birthday Campaign Message" 
+                     style="max-width: 80%; height: auto; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+            </div>
+
+            <h3>Sep 5: Extended Travel Promotion</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/S__107233314.jpg" 
+                     alt="September 5 Extended Promotion Message" 
+                     style="max-width: 80%; height: auto; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+            </div>
+
+            <div class="insight-box warning">
+                <h4>⚠️ Campaign Impact Analysis</h4>
+                <ul>
+                    <li>Rapid message sequence (Sep 1→4→5) contributed to block rate spike</li>
+                    <li>Most blocks from expired policy holders receiving promotional messages</li>
+                    <li>Need for better policy status tracking in messaging system</li>
+                    <li>Recommendation: Minimum 72-hour spacing between campaign messages</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Thank You -->
+        <div class="slide title-slide">
+            <h1>Thank You</h1>
+            <h2>Questions & Discussion</h2>
+            <div class="date">Let's continue improving our LINE connection performance together! 🎯</div>
+        </div>
+
+    </div>
+
+    <!-- Modal for Greeting Message -->
+    <div id="greetingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('greetingModal')">&times;</span>
+            <h3 class="modal-title">Updated Greeting Message</h3>
+            <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/S__103694393_0.jpg" 
+                 alt="Updated Greeting Message" 
+                 class="modal-image">
+        </div>
+    </div>
+
+    <!-- Modal for Sep 1 Campaign -->
+    <div id="sep1Modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sep1Modal')">&times;</span>
+            <h3 class="modal-title">Sep 1: Birthday Campaign Teaser</h3>
+            <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B1%20Sep%202025%5D%20Birthday%20Teaser.jpeg" 
+                 alt="September 1 Teaser Message" 
+                 class="modal-image">
+        </div>
+    </div>
+
+    <!-- Modal for Sep 4 Campaign -->
+    <div id="sep4Modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sep4Modal')">&times;</span>
+            <h3 class="modal-title">Sep 4: Birthday Campaign Launch + Details</h3>
+            <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/%5B4%20Sep%202025%5D%20Birthday%20Teaser1.jpg" 
+                 alt="September 4 Birthday Campaign Message" 
+                 class="modal-image">
+        </div>
+    </div>
+
+    <!-- Modal for Sep 5 Campaign -->
+    <div id="sep5Modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sep5Modal')">&times;</span>
+            <h3 class="modal-title">Sep 5: Extended Travel Promotion</h3>
+            <img src="https://raw.githubusercontent.com/kamornrath/image/refs/heads/main/S__107233314.jpg" 
+                 alt="September 5 Extended Promotion Message" 
+                 class="modal-image">
+        </div>
+    </div>
+
+    <script>
+        // Connection Rate Trend Chart
+        const ctx1 = document.getElementById('connectionTrendChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                datasets: [{
+                    label: 'Connection Rate (%)',
+                    data: [51.19, 38.89, 36.88, 37.37, 37.38, 36.38, 36.50, 35.66, 39.75],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 60,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: '2025 Monthly Connection Rate Trend'
+                    }
+                }
+            }
+        });
+
+        // Block Rate Chart
+        const ctx2 = document.getElementById('blockRateChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                datasets: [{
+                    label: 'Block Rate (%)',
+                    data: [0.07, 0.14, 0.11, 0.19, 0.08, 0.08, 0.02, 0.02, 0.09],
+                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                    borderColor: '#f44336',
+                    borderWidth: 2,
+                    borderRadius: 5
+                }, {
+                    label: 'Campaign Count',
+                    data: [5, 9, 7, 12, 7, 6, 4, 1, 3],
+                    type: 'line',
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                    yAxisID: 'y1',
+                    borderWidth: 3,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 0.25,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        max: 15,
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Block Rate vs Campaign Activity'
+                    }
+                }
+            }
+        });
+
+        // Destination Performance Chart
+        const ctx3 = document.getElementById('destinationChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Worldwide', 'China', 'Japan', 'South Korea', 'Taiwan', 'Hong Kong', 'Singapore', 'Vietnam', 'Malaysia', 'Laos'],
+                datasets: [{
+                    label: 'Connection Rate (%)',
+                    data: [39.1, 37.2, 36.1, 36.1, 35.9, 33.1, 33.9, 28.8, 26.1, 8.9],
+                    backgroundColor: [
+                        '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe',
+                        '#43e97b', '#38f9d7', '#ffecd2', '#fcb69f'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 45,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Connection Rate by Destination'
+                    }
+                }
+            }
+        });
+
+        // Add smooth scrolling and intersection observer for animations
+        const slides = document.querySelectorAll('.slide');
+        
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        slides.forEach(slide => {
+            observer.observe(slide);
+        });
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modals = ['greetingModal', 'sep1Modal', 'sep4Modal', 'sep5Modal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    closeModal(modalId);
+                }
+            });
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = ['greetingModal', 'sep1Modal', 'sep4Modal', 'sep5Modal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (modal.style.display === 'block') {
+                        closeModal(modalId);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
